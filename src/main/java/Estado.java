@@ -1,4 +1,4 @@
-package com.ejemplo.serviciodummy;
+package main.java;
 
 public class Estado {
 
