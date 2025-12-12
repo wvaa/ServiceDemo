@@ -7,8 +7,7 @@ pipeline {
             image 'docker:dind'
             // Permiso necesario para que el daemon interno de Docker funcione
             args '--privileged'
-            // Definimos el label para el agente
-            label 'dind-builder'
+
         }
     }
 
