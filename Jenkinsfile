@@ -7,8 +7,8 @@ pipeline {
             image 'docker:dind'
             // Permiso necesario para que el daemon interno de Docker funcione
             args '--privileged'
-            // Definimos el label para el agente
-            //label 'dind-builder'
+            // No necesitamos la variable DOCKER_HOST aquí,
+            // ya que el 'docker build' usará el daemon interno de DinD.
         }
     }
 
@@ -30,11 +30,11 @@ pipeline {
             steps {
                 script {
                     echo 'Esperando la inicialización del daemon de Docker interno (DinD)...'
-                    // Espera activa de 15 segundos para que el daemon interno inicie
+                    // ESTE ES EL PASO CLAVE: Asegura que el daemon DinD esté listo antes de usar 'docker'
                     sh 'timeout 15 sh -c "while ! docker info > /dev/null 2>&1; do echo Waiting for DinD daemon...; sleep 1; done"'
                     echo '¡Daemon DinD interno listo para usar!'
 
-                    // Verificamos que no hay imágenes ni contenedores preexistentes en este daemon aislado
+                    // Verificación de que el cliente Docker funciona dentro de DinD
                     sh 'docker images'
                 }
             }
@@ -63,19 +63,14 @@ pipeline {
 
                     echo "Lanzando contenedor de prueba ${containerName} en el entorno DinD..."
 
-                    // Ejecuta el contenedor. Asumimos que la aplicación expone el puerto 80.
-                    // Esto simula un despliegue de prueba en el entorno aislado.
+                    // El contenedor DinD es quien orquesta este nuevo contenedor
                     sh "docker run -d --name ${containerName} -p 8080:80 ${imageTag}"
 
-                    // Verificación (opcional): Espera y verifica los logs del contenedor
+                    // Verificación de logs y limpieza
                     echo 'Esperando unos segundos y mostrando los logs del contenedor...'
                     sh "sleep 5"
                     sh "docker logs ${containerName}"
-
-                    // Mostrar los contenedores activos en el daemon DinD
                     sh "docker ps"
-
-                    // Detener y eliminar el contenedor de prueba (limpieza interna)
                     sh "docker stop ${containerName}"
                     sh "docker rm ${containerName}"
                 }
@@ -83,11 +78,9 @@ pipeline {
         }
     }
 
-    // El 'post' se ejecuta después de que todas las etapas terminan (éxito o fallo)
     post {
         always {
-            // Este comando es opcional pero bueno para forzar la limpieza del DinD
-            // Aunque el agente efímero se destruye, forzar la eliminación de imágenes es buena práctica.
+            // El agente DinD se destruye automáticamente, pero esta limpieza es una buena práctica de precaución.
             script {
                 sh "docker rmi \$(docker images -q) || true"
             }
