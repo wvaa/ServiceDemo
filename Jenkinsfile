@@ -2,33 +2,42 @@ pipeline {
     agent any
 
     stages {
-        stage('Limpieza inicial') {
+        stage('Limpieza') {
             steps {
-                // Borra archivos de construcciones anteriores
-                deleteDir()
-                // Limpia el contenedor si existe
-                sh 'docker rm -f apache-service || true'
+                // Detenemos el contenedor anterior si existe
+                sh 'docker rm -f service-demo-app || true'
             }
         }
 
         stage('Checkout') {
             steps {
-                // Especificamos la rama 'main'
+                // Forzamos el uso de la rama main
                 git branch: 'main', url: 'https://github.com/wvaa/ServiceDemo.git'
             }
         }
 
-        stage('Build & Deploy Apache') {
+        stage('Build & Deploy (Spring Boot)') {
             steps {
                 script {
+                    // Creamos un Dockerfile para compilar y ejecutar Java
                     sh """
-                    echo 'FROM httpd:2.4-alpine' > Dockerfile.deploy
-                    echo 'COPY . /usr/local/apache2/htdocs/' >> Dockerfile.deploy
-                    docker build -t service-demo-image -f Dockerfile.deploy .
+                    echo '# Etapa 1: Compilación con Maven' > Dockerfile.springboot
+                    echo 'FROM maven:3.8.5-openjdk-17-slim AS build' >> Dockerfile.springboot
+                    echo 'COPY . /app' >> Dockerfile.springboot
+                    echo 'WORKDIR /app' >> Dockerfile.springboot
+                    echo 'RUN mvn clean package -DskipTests' >> Dockerfile.springboot
+                    echo '' >> Dockerfile.springboot
+                    echo '# Etapa 2: Ejecución con JRE' >> Dockerfile.springboot
+                    echo 'FROM openjdk:17-jdk-slim' >> Dockerfile.springboot
+                    echo 'COPY --from=build /app/target/*.jar app.jar' >> Dockerfile.springboot
+                    echo 'EXPOSE 8080' >> Dockerfile.springboot
+                    echo 'ENTRYPOINT ["java", "-jar", "/app.jar"]' >> Dockerfile.springboot
+
+                    docker build -t service-demo-image -f Dockerfile.springboot .
                     """
 
-                    // Desplegamos mapeando el puerto 8081 del host
-                    sh 'docker run -d --name apache-service -p 8081:80 service-demo-image'
+                    // Ejecutamos el contenedor mapeando el puerto 8080 de Spring al 8081 de Windows
+                    sh 'docker run -d --name service-demo-app -p 8081:8080 service-demo-image'
                 }
             }
         }
