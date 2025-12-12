@@ -47,6 +47,11 @@
 # CMake
 cmake-build-*/
 
+# Carpetas generadas por Maven
+target/
+
+#Archivos
+Dockerfile_jenkins
 
 # Mongo Explorer plugin
 .idea/**/mongoSettings.xml
