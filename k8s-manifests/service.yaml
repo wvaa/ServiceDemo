@@ -1,0 +1,23 @@
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicedemo-service
+spec:
+  # 1. Tipo de Servicio: NodePort para acceso desde fuera del clúster en entornos locales.
+  type: NodePort
+  selector:
+    app: servicedemo-sb # Debe coincidir con el label 'app' de tu Deployment (servicedemo-sb)
+  ports:
+    - protocol: TCP
+      # 2. Puerto del Servicio (ClusterIP): El puerto que usa el servicio internamente en el clúster.
+      # Puedes usar 80 aquí, o el que prefieras para la comunicación interna.
+      port: 80
+
+      # 3. Puerto Destino (ContainerPort): El puerto real que está escuchando tu aplicación (8082).
+      targetPort: 8082
+
+      # 4. Puerto del Nodo (NodePort): (Opcional) El puerto que se abrirá en la IP de cada nodo.
+      # Si lo omites, Kubernetes elegirá un puerto aleatorio (típicamente entre 30000-32767).
+      # Puedes especificar uno, por ejemplo:
+      nodePort: 30080

@@ -1,0 +1,44 @@
+# argocd-app.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  # Nombre único para tu aplicación en ArgoCD UI
+  name: servicedemo-app
+  namespace: argocd # El namespace donde está instalado ArgoCD
+  # Opcional: Etiquetas para organizar tus aplicaciones
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # --- 1. CONFIGURACIÓN DEL PROYECTO ---
+  # El proyecto por defecto es 'default'.
+  project: default
+
+  # --- 2. CONFIGURACIÓN DEL DESTINO (El Clúster de Kubernetes) ---
+  destination:
+    # URL del servidor de destino. 'kubernetes.default.svc' se refiere al clúster donde corre ArgoCD.
+    # Si quieres desplegar en un clúster remoto, usa su nombre o API URL.
+    server: https://kubernetes.default.svc
+    # El namespace donde se crearán los recursos (Pods, Services, etc.)
+    namespace: servicedemo-namespace # Asegúrate de que este namespace exista en el destino
+
+  # --- 3. CONFIGURACIÓN DE LA FUENTE (El Repositorio Git) ---
+  source:
+    # URL de tu repositorio Git (¡Reemplaza con tu URL real!)
+    repoURL: https://github.com/wvaa/ServiceDemo.git
+
+    # La rama o commit que debe desplegar ArgoCD
+    targetRevision: HEAD # Esto apunta a la última versión en la rama por defecto (main/master)
+
+    # El PATH dentro del repositorio donde ArgoCD debe buscar los manifiestos YAML
+    path: k8s-manifests # ¡Asegúrate de que tus YAMLs estén en este directorio!
+
+  # --- 4. OPCIONES DE SINCRONIZACIÓN ---
+  syncPolicy:
+    # La sincronización automática habilita GitOps: ArgoCD monitorizará el repo y aplicará cambios
+    automated:
+      prune: true      # Elimina los recursos de K8s que ya no están en Git
+      selfHeal: true   # Corrige las desviaciones de estado (si alguien edita un recurso en K8s, ArgoCD lo revierte)
+
+    syncOptions:
+      # Crea automáticamente el namespace si no existe
+      - CreateNamespace=true
