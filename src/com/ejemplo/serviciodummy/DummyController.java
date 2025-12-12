@@ -22,7 +22,7 @@ public class DummyController {
 
         // 2. Creamos una instancia de nuestro objeto de respuesta
         Estado respuesta = new Estado(
-                "El servicio esta activo y funcionando correctamente.",
+                "El servicio demo nesta activo y funcionando correctamente.",
                 true,
                 fechaHoraActual
         );
