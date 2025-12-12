@@ -25,6 +25,6 @@ spec:
           livenessProbe:
             httpGet:
               path: /actuator/health # Si usas Spring Boot Actuator, usa esta ruta
-              port: 8082
+              port: 8080
             initialDelaySeconds: 15 # Espera 15 segundos después de iniciar
             periodSeconds: 10
