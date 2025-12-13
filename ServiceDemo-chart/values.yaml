@@ -1,0 +1,18 @@
+# values.yaml
+replicaCount: 1
+
+image:
+  # Imagen actual que tienes en tu deployment.yaml
+  repository: wilmeraguilar/servicedemo-sb
+  tag: 1.1
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80         # Puerto del ClusterIP
+  targetPort: 8080 # Puerto de la aplicación Spring Boot (el containerPort)
+  nodePort: 30081  # Puerto del Nodo (entre 30000-32767)
+
+# Labels usados para la selección y el nombre de los recursos
+app:
+  name: servicedemo-sb

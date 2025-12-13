@@ -1,0 +1,11 @@
+# Chart.yaml
+apiVersion: v2
+name: servicedemo-chart
+description: Un Chart de Helm para desplegar el servicio ServiceDemo de Spring Boot.
+type: application
+version: 0.1.0 # Versión del Chart, independientemente de la versión de la aplicación
+appVersion: "1.1" # La versión de la aplicación que despliega este Chart (opcional)
+keywords:
+  - springboot
+  - java
+  - backend

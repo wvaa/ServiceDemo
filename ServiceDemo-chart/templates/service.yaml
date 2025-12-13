@@ -1,0 +1,21 @@
+# templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "servicedemo.fullname" . }}-service
+  labels:
+    app: {{ .Values.app.name }}
+spec:
+  # Configurable: NodePort, ClusterIP, LoadBalancer...
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ .Values.app.name }} # Debe coincidir con el label 'app' del Deployment
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}          # Puerto del Service (ClusterIP)
+      targetPort: {{ .Values.service.targetPort }} # Puerto del contenedor (8080)
+
+      # Solo si type es NodePort
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
