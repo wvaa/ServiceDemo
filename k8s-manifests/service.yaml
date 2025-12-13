@@ -15,7 +15,7 @@ spec:
       port: 80
 
       # 3. Puerto Destino (ContainerPort): El puerto real que está escuchando tu aplicación (8082).
-      targetPort: 8082
+      targetPort: 8080
 
       # 4. Puerto del Nodo (NodePort): (Opcional) El puerto que se abrirá en la IP de cada nodo.
       # Si lo omites, Kubernetes elegirá un puerto aleatorio (típicamente entre 30000-32767).
