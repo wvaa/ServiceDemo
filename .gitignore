@@ -120,4 +120,43 @@ fabric.properties
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 .idea/**/azureSettings.xml
 
+# -----------------------------------------------------------------------------
+# 2. IGNORAR ARTEFACTOS DE TERRAFORM
+# -----------------------------------------------------------------------------
+
+# 1. Archivo de Estado (EL MÁS IMPORTANTE)
+# Contiene el estado de la infraestructura y a menudo credenciales temporales.
+# ¡NUNCA debe ser comiteado!
+**/*.tfstate
+**/*.tfstate.*
+*.tfstate
+*.tfstate.*
+
+# 2. Registros de Ejecución
+*.tfplan        # Planes de ejecución generados
+.terraform.lock.hcl # Archivo de bloqueo de dependencias (OPCIONAL, pero recomendado)
+
+# 3. Directorio de Dependencias
+# Contiene los proveedores de Terraform descargados (kubernetes, helm, etc.)
+# Se regenera con 'terraform init'
+.terraform/
+
+# 4. Archivos de respaldo
+*~
+*.backup
+
+# -----------------------------------------------------------------------------
+# 3. IGNORAR ARTEFACTOS DE HELM
+# -----------------------------------------------------------------------------
+
+# Al trabajar con Charts de Helm, a veces se generan archivos de paquetes (.tgz)
+# y directorios de dependencia si usas subcharts.
+
+# Paquetes de Charts generados (ej: servicedemo-chart-0.1.0.tgz)
+**/*.tgz
+
+# Directorios de dependencias (si el chart tiene dependencias)
+**/charts/
+
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij
