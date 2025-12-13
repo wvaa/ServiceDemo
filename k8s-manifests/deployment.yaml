@@ -22,9 +22,9 @@ spec:
           ports:
             - containerPort: 8080 # Puerto por defecto de Spring Boot
           # Prueba de Liveness para asegurar que el servicio está vivo (ajusta la ruta /path-to-check)
-          #livenessProbe:
-          #  httpGet:
-          #    path: /actuator/health # Si usas Spring Boot Actuator, usa esta ruta
-          #    port: 8080
-          #  initialDelaySeconds: 15 # Espera 15 segundos después de iniciar
-          #  periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health # Si usas Spring Boot Actuator, usa esta ruta
+              port: 8080
+            initialDelaySeconds: 15 # Espera 15 segundos después de iniciar
+            periodSeconds: 10
